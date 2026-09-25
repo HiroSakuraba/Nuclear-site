@@ -4,6 +4,8 @@
 
 Benjamin John Schulz · Independent research · Revision 3, September 2026
 
+**Read online:** [Full analysis](https://hirosakuraba.github.io/Nuclear-site/) · [One-page pitch](https://hirosakuraba.github.io/Nuclear-site/pitch.html)
+
 ---
 
 This repository holds a planning-level policy analysis. It asks whether small modular reactors (SMRs) could give Puerto Rico firm, hurricane-resilient power, where they should go, and which designs fit the island's grid. It also includes a one-page pitch for decision-makers.
@@ -31,7 +33,7 @@ Both sites use seawater for cooling. The safety structures sit on raised ground 
 | [`pdf/puerto-rico-smr-siting-analysis.pdf`](pdf/puerto-rico-smr-siting-analysis.pdf) | Full analysis, letter-size PDF (19 pages) |
 | [`pdf/puerto-rico-smr-one-page-pitch.pdf`](pdf/puerto-rico-smr-one-page-pitch.pdf) | One-page pitch, letter-size PDF |
 
-The HTML files are self-contained and have no external dependencies. If GitHub Pages is enabled with the `/docs` folder as its source, the analysis is served at the site root and the pitch at `/pitch.html`.
+The HTML files are self-contained and have no external dependencies. They are published with GitHub Pages from the `/docs` folder: the analysis at <https://hirosakuraba.github.io/Nuclear-site/> and the pitch at <https://hirosakuraba.github.io/Nuclear-site/pitch.html>.
 
 ## Revision history
 
