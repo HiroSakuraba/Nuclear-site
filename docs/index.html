@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Puerto Rico SMR Siting Analysis</title>
+  <style>
+    :root {
+      --ink: #1b1f24;
+      --navy: #1f3a5f;
+      --muted: #5a6270;
+      --rule: #c9cdd3;
+      --rule-strong: #1b1f24;
+      --shade: #f3f4f6;
+      --page: #ffffff;
+      --desk: #e8eaed;
+      --fav-bg: #e7f0ea; --fav-ink: #1e5b37;
+      --mod-bg: #f6f0df; --mod-ink: #6b4e0f;
+      --unf-bg: #f5e4e4; --unf-ink: #7a1f1f;
+      --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+      --sans: "Helvetica Neue", Arial, "Segoe UI", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body { background: var(--desk); color: var(--ink); font-family: var(--serif); font-size: 16.5px; line-height: 1.6; }
+    .page {
+      max-width: 860px; margin: 2rem auto; background: var(--page);
+      padding: 3.2rem 3.6rem 3rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
+    }
+    .docline { font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.4rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.6rem; }
+    h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.7rem, 3.6vw, 2.25rem); line-height: 1.2; color: var(--navy); margin: 1.6rem 0 0.5rem; letter-spacing: -0.01em; }
+    .subtitle { font-size: 1.1rem; color: var(--muted); margin: 0 0 1.4rem; font-style: italic; }
+    .byline { font-family: var(--sans); font-size: 0.86rem; color: var(--ink); border-top: 2px solid var(--rule-strong); border-bottom: 1px solid var(--rule); padding: 0.7rem 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.35rem 1.2rem; }
+    .byline span b { display: block; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    h2 { font-family: var(--sans); font-size: 1.12rem; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.06em; margin: 2.8rem 0 0.9rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--rule); }
+    h3 { font-family: var(--sans); font-size: 1rem; font-weight: 700; color: var(--ink); margin: 1.7rem 0 0.5rem; }
+    h4 { font-family: var(--sans); font-size: 0.92rem; font-weight: 700; color: var(--muted); margin: 1.2rem 0 0.35rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    p { margin: 0.65rem 0; }
+    ul, ol { margin: 0.4rem 0 1rem; padding-left: 1.4rem; }
+    li { margin: 0.35rem 0; }
+    a { color: var(--navy); }
+    .ref { font-family: var(--sans); font-size: 0.72em; vertical-align: super; line-height: 0; white-space: nowrap; }
+    .ref a { text-decoration: none; color: var(--navy); }
+    .summary { background: var(--shade); border-top: 3px solid var(--navy); padding: 1.2rem 1.5rem 0.9rem; margin: 1.8rem 0 0.5rem; }
+    .summary h2 { margin-top: 0.2rem; border: 0; padding: 0; }
+    ol.findings > li { margin: 0.6rem 0; }
+    .recommend { border-left: 4px solid var(--navy); background: #fff; padding: 0.8rem 1.1rem; margin: 1rem 0 0.4rem; }
+    .recommend b.label { font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy); display: block; margin-bottom: 0.25rem; }
+    nav.toc { font-family: var(--sans); font-size: 0.88rem; margin: 1.6rem 0 0.5rem; }
+    nav.toc ol { columns: 2; column-gap: 2.2rem; padding-left: 1.3rem; margin: 0.4rem 0; }
+    nav.toc li { margin: 0.18rem 0; break-inside: avoid; }
+    nav.toc a { text-decoration: none; color: var(--ink); }
+    nav.toc a:hover { color: var(--navy); text-decoration: underline; }
+    nav.toc .h { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+    .tablewrap { overflow-x: auto; margin: 0.4rem 0 1.3rem; }
+    .caption { font-family: var(--sans); font-size: 0.82rem; font-weight: 700; color: var(--ink); margin: 1.4rem 0 0.35rem; }
+    .caption span { font-weight: 400; color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 0.84rem; line-height: 1.45; border-top: 1.5px solid var(--rule-strong); border-bottom: 1.5px solid var(--rule-strong); }
+    th, td { padding: 0.5rem 0.6rem; text-align: left; vertical-align: top; }
+    thead th { border-bottom: 1px solid var(--rule-strong); font-weight: 700; font-size: 0.78rem; letter-spacing: 0.02em; }
+    tbody tr + tr td { border-top: 1px solid #e3e6ea; }
+    td.num, th.num { white-space: nowrap; }
+    tr.total td { border-top: 1px solid var(--rule-strong); font-weight: 700; }
+    .fav, .mod, .unf { display: inline-block; font-weight: 700; font-size: 0.74rem; letter-spacing: 0.02em; padding: 0.1rem 0.4rem; border-radius: 3px; white-space: nowrap; }
+    .fav { background: var(--fav-bg); color: var(--fav-ink); }
+    .mod { background: var(--mod-bg); color: var(--mod-ink); }
+    .unf { background: var(--unf-bg); color: var(--unf-ink); }
+    .tnote { font-family: var(--sans); font-size: 0.76rem; color: var(--muted); margin: -0.8rem 0 1.3rem; }
+    figure { margin: 1.4rem 0; }
+    figure svg { width: 100%; height: auto; display: block; border: 1px solid var(--rule); }
+    figcaption { font-family: var(--sans); font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; }
+    figcaption b { color: var(--ink); }
+    .profile { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; border-top: 1.5px solid var(--rule-strong); border-bottom: 1px solid var(--rule); margin: 0.6rem 0 1rem; font-family: var(--sans); }
+    .profile div { padding: 0.5rem 0.6rem; border-right: 1px solid #e3e6ea; }
+    .profile div:last-child { border-right: 0; }
+    .profile b { display: block; font-size: 1rem; color: var(--navy); }
+    .profile span { font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    ol.refs { font-family: var(--sans); font-size: 0.8rem; line-height: 1.5; color: var(--ink); padding-left: 1.8rem; }
+    ol.refs li { margin: 0.45rem 0; }
+    ol.refs a { word-break: break-word; }
+    dl.acr { display: grid; grid-template-columns: 7.5rem 1fr; gap: 0.25rem 1rem; font-family: var(--sans); font-size: 0.84rem; margin: 0.6rem 0 1rem; }
+    dl.acr dt { font-weight: 700; }
+    dl.acr dd { margin: 0; }
+    .endnote { font-family: var(--sans); font-size: 0.76rem; color: var(--muted); border-top: 1px solid var(--rule); margin-top: 2.4rem; padding-top: 0.8rem; }
+    @media (max-width: 700px) {
+      body { font-size: 16px; }
+      .page { margin: 0; padding: 1.6rem 16px 2rem; box-shadow: none; }
+      nav.toc ol { columns: 1; }
+      dl.acr { grid-template-columns: 5.5rem 1fr; }
+      .summary { padding: 1rem 1rem 0.7rem; }
+    }
+    @media print {
+      @page { size: letter; margin: 0.85in 0.9in; }
+      body { background: #fff; font-size: 11pt; }
+      .page { box-shadow: none; margin: 0; padding: 0; max-width: none; }
+      h2 { break-after: avoid; }
+      table, figure, .summary, .profile { break-inside: avoid; }
+      a { color: var(--ink); text-decoration: none; }
+      .fav, .mod, .unf, .summary { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+<article class="page">
+
+  <div class="docline"><span>Policy Analysis · Energy Resilience</span><span>Draft for discussion · Revision 3</span></div>
+
+  <h1>Siting Small Modular Reactors in Puerto Rico: A Two-Site Option at Aguirre and Ceiba</h1>
+  <p class="subtitle">Siting, technology selection, grid integration, and extreme-event design considerations for approximately 1.1 GWe of firm nuclear capacity</p>
+
+  <div class="byline">
+    <span><b>Prepared by</b>Benjamin John Schulz, independent researcher</span>
+    <span><b>Date</b>September 24, 2026</span>
+    <span><b>Status</b>Planning-level analysis; not an engineering, licensing, or cost estimate</span>
+  </div>
+
+  <section class="summary" id="summary">
+    <h2>Executive Summary</h2>
+    <p>Puerto Rico's electric system combines aging fossil generation concentrated on the south coast, demand concentrated in the north, and transmission across the Cordillera Central that failed for extended periods after Hurricane Maria.<span class="ref"><a href="#r21">[21]</a></span> This paper assesses whether small modular reactors (SMRs) could provide firm, hurricane-resilient capacity. If so, it asks where they should be sited and which designs fit the island's grid.</p>
+    <p>The recommended configuration places two to three GE Vernova Hitachi BWRX-300 units at the site of the retiring Aguirre power complex in Salinas, and one six-module NuScale US460 plant on elevated land behind the former Naval Station Roosevelt Roads in Ceiba. Both sites would use seawater for cooling and place safety structures on raised ground set back from the coast. Net capacity would be 1,062 MWe, or 1,362 MWe with a third Aguirre unit. That is about 37 to 47 percent of the island's peak demand.</p>
+
+    <h3>Key findings</h3>
+    <ol class="findings">
+      <li><strong>Aguirre is the strongest single site.</strong> Its 1,492 MW oil-fired complex is expected to retire around 2030, and the 500 MW AES coal plant nearby must close by 2032.<span class="ref"><a href="#r16">[16]</a><a href="#r17">[17]</a><a href="#r18">[18]</a></span> Reactors there would reuse an existing transmission hub, industrial land, and a nearby port. Their unit size (300 MWe) is below the 450 MW units the grid already accommodates at that node.</li>
+      <li><strong>Ceiba adds supply on the load side of the mountains.</strong> From Ceiba, power can reach the San Juan metropolitan area without crossing the Cordillera Central. NuScale's 77 MWe modules limit the size of any single trip on the weaker eastern grid. The vendor also states that a module can operate in island mode and support black start. That claim is unverified, but if confirmed it would materially aid post-storm restoration.<span class="ref"><a href="#r22">[22]</a></span></li>
+      <li><strong>Seawater cooling removes the freshwater constraint.</strong> At Aguirre, a closed-cycle seawater system would withdraw roughly 3 to 4 percent of the approximately 654 million gallons per day the existing plant draws from Jobos Bay.<span class="ref"><a href="#r19">[19]</a></span></li>
+      <li><strong>Passive safety addresses Puerto Rico's dominant hurricane failure mode.</strong> That failure mode is prolonged isolation: weeks without offsite power, road access, or resupply. Both designs remove decay heat without pumps, AC power, or operator action, according to vendor safety cases that licensing must confirm.</li>
+      <li><strong>The binding constraints are cost, grid stability, community acceptance, and Commonwealth policy.</strong> Comparable projects imply capital costs of at least $17 to $21 billion.<span class="ref"><a href="#r4">[4]</a><a href="#r5">[5]</a></span> The Governor has stated she will not devote resources to evaluating nuclear power.<span class="ref"><a href="#r12">[12]</a></span> First power is unlikely before the mid-2030s.</li>
+    </ol>
+
+    <div class="recommend">
+      <b class="label">Recommendation</b>
+      Fund a two-to-three-year site characterization program at Aguirre and Ceiba under an identified federal or private sponsor. It should cover coastal hazard, seismic, marine intake, population, and grid interconnection studies, plus structured engagement with Commonwealth agencies and host communities. Defer any construction commitment to the decision gates in Section 12.
+    </div>
+  </section>
+
+  <nav class="toc" aria-label="Contents">
+    <div class="h">Contents</div>
+    <ol>
+      <li><a href="#s1">Background</a></li>
+      <li><a href="#s2">Scope, Criteria, and Method</a></li>
+      <li><a href="#s3">Options Considered</a></li>
+      <li><a href="#s4">Recommended Configuration</a></li>
+      <li><a href="#s5">Site Assessments</a></li>
+      <li><a href="#s6">Sites Screened Out</a></li>
+      <li><a href="#s7">Technology Assessment</a></li>
+      <li><a href="#s8">Grid Integration</a></li>
+      <li><a href="#s9">Extreme-Event Design Basis</a></li>
+      <li><a href="#s10">Licensing Considerations</a></li>
+      <li><a href="#s11">Cost, Financing, and Schedule</a></li>
+      <li><a href="#s12">Implementation Pathway and Decision Gates</a></li>
+      <li><a href="#s13">Stakeholders and Governance</a></li>
+      <li><a href="#s14">Key Uncertainties for Policymakers</a></li>
+      <li><a href="#s15">Limitations</a></li>
+      <li><a href="#appA">Appendix A. Assumptions and Calculations</a></li>
+      <li><a href="#appB">Appendix B. Acronyms</a></li>
+      <li><a href="#refs">References</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="s1">1. Background</h2>
+  <h3>1.1 System conditions</h3>
+  <ul>
+    <li><strong>Demand.</strong> Island peak demand is approximately 2,900 MW.<span class="ref"><a href="#r1">[1]</a></span> About 1.2 GW of rooftop solar is installed under net metering, which lowers midday net load.<span class="ref"><a href="#r15">[15]</a></span></li>
+    <li><strong>Where generation sits.</strong> Roughly two-thirds of generating capacity is on the south coast, while most demand is in the north. After Hurricane Maria, damage to the cross-island transmission corridors kept restored southern generation from reaching northern customers.<span class="ref"><a href="#r21">[21]</a></span></li>
+    <li><strong>Fragility.</strong> Single-unit events still cause widespread outages. In May 2026, a trip of Costa Sur Unit 6 interrupted service to nearly 150,000 customers.<span class="ref"><a href="#r14">[14]</a></span></li>
+    <li><strong>Retirements.</strong> The Aguirre complex (1,492 MW, heavy fuel oil, 1975–77) is expected to retire around 2030.<span class="ref"><a href="#r16">[16]</a><a href="#r17">[17]</a></span> In March 2025, legislation extended the AES coal plant's (~500 MW) operating deadline from 2028 to 2032.<span class="ref"><a href="#r18">[18]</a></span></li>
+  </ul>
+  <h3>1.2 Policy context</h3>
+  <p>In June 2025, Governor Jenniffer González Colón stated that her administration is open to all generation technologies except nuclear and would not allocate time or resources to evaluating it.<span class="ref"><a href="#r12">[12]</a></span> She also signed the 2025 coal-plant extension, citing the need for "reliable, not intermittent" and affordable supply.<span class="ref"><a href="#r18">[18]</a></span> Separately, a former member of the Financial Oversight and Management Board has publicly proposed a federally led rebuild of the power system anchored in natural gas and nuclear energy.<span class="ref"><a href="#r12">[12]</a></span></p>
+  <h3>1.3 Prior nuclear work in Puerto Rico</h3>
+  <p>Puerto Rico hosted the Boiling Nuclear Superheater (BONUS) experimental reactor at Rincón from 1964 to 1968. More recently, the Nuclear Alternative Project, a nonprofit led by Puerto Rican engineers, completed a DOE-funded preliminary feasibility study (2020). It then received a $1.6 million DOE award for a siting study that identified two candidate sites under NRC criteria (2021), and it published an economic study (2024).<span class="ref"><a href="#r13">[13]</a></span> The sites in this paper should be reconciled with that work.</p>
+
+  <h2 id="s2">2. Scope, Criteria, and Method</h2>
+  <p>This is a planning-level screening analysis based on public sources. Candidate sites and technologies were evaluated against the following criteria:</p>
+  <ol>
+    <li><strong>Resilience of supply</strong> to the principal load center after a major hurricane.</li>
+    <li><strong>Grid compatibility</strong>, meaning unit size relative to existing contingencies, access to existing transmission, and restoration role.</li>
+    <li><strong>Natural hazards:</strong> storm surge, tsunami, riverine and dam-break flooding, landslide, and seismic exposure.</li>
+    <li><strong>Cooling water</strong> availability and conflicts with public supply.</li>
+    <li><strong>Logistics</strong> for delivering large reactor components.</li>
+    <li><strong>Regulatory fit</strong> with NRC population and emergency-planning guidance, and the licensing maturity of each technology.</li>
+    <li><strong>Land, environmental, and community</strong> considerations.</li>
+    <li><strong>Indicative cost</strong> based on reference projects.</li>
+  </ol>
+  <p>Assessments are qualitative except where noted. Water and cost figures are the author's calculations from stated assumptions (Appendix A). Vendor performance claims are identified as such.</p>
+
+  <h2 id="s3">3. Options Considered</h2>
+  <p class="caption">Table 1. <span>Comparison of configuration options</span></p>
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th>Criterion</th><th>Option 1 (recommended): Aguirre + Ceiba</th><th>Option 2: Utuado + Ceiba (prior revision)</th><th>Option 3: Aguirre only</th><th>Option 4: No nuclear (current resource planning)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Net nuclear capacity</td><td class="num">1,062–1,362 MWe</td><td class="num">1,062–1,362 MWe</td><td class="num">600–900 MWe</td><td class="num">—</td></tr>
+        <tr><td>Post-hurricane supply to San Juan</td><td>Firm supply on the load side (Ceiba)</td><td>Firm supply on the load side (Ceiba)</td><td>Still depends on cross-mountain lines</td><td>Depends on transmission hardening and distributed storage</td></tr>
+        <tr><td>Use of existing grid assets</td><td>High (Aguirre hub)</td><td>Low (new corridors from Utuado)</td><td>High</td><td>Moderate</td></tr>
+        <tr><td>Cooling-water conflict</td><td>Low (seawater)</td><td>High (Dos Bocas feeds public supply)</td><td>Low</td><td>Not applicable</td></tr>
+        <tr><td>Geotechnical and access risk</td><td>Moderate</td><td>High (landslides, heavy haul)</td><td>Low to moderate</td><td>Not applicable</td></tr>
+        <tr><td>Technology risk</td><td>Two vendors; NuScale unbuilt</td><td>Two vendors; NuScale unbuilt</td><td>One vendor; under construction in Canada</td><td>Established technologies</td></tr>
+        <tr><td>Indicative capital cost</td><td class="num">≥ $17–21B</td><td class="num">≥ $17–21B</td><td class="num">≥ $7.6–11.3B</td><td>Per the Energy Bureau's resource plan</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Option 3 is a lower-cost first phase that is fully consistent with Option 1. It does not, however, address the north–south transmission vulnerability, which is the central resilience problem. Option 4 is the baseline against which any nuclear proposal would be evaluated in the Energy Bureau's resource planning process.</p>
+
+  <h2 id="s4">4. Recommended Configuration</h2>
+  <p class="caption">Table 2. <span>Recommended fleet</span></p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Site</th><th>Technology</th><th class="num">Net MWe</th><th>Rationale</th></tr></thead>
+      <tbody>
+        <tr><td>Aguirre (Salinas)</td><td>2 × BWRX-300; space reserved for a third unit</td><td class="num">600 (900)</td><td>Replaces retiring fossil capacity at an existing hub. The unit size is below the existing 450 MW contingency at that node. It is the most mature SMR design in Western construction.</td></tr>
+        <tr><td>Ceiba (Roosevelt Roads)</td><td>1 × NuScale US460 (6 × 77 MWe)</td><td class="num">462</td><td>Firm supply on the load side. Small module trips suit the eastern grid. The vendor claims island-mode and black-start capability. The configuration matches the NRC-approved design.<span class="ref"><a href="#r2">[2]</a></span></td></tr>
+        <tr class="total"><td>Total</td><td></td><td class="num">1,062 (1,362)</td><td>Approximately 37% of peak demand (47% with the third Aguirre unit)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>With seawater cooling, total size is limited by the grid, not by water. Additional units should follow only after grid studies confirm (a) sufficient fast reserves to cover the loss of an entire site and (b) acceptable operation during low-load hours (Section 8).</p>
+
+  <figure>
+    <svg viewBox="0 0 820 345" role="img" aria-labelledby="figtitle">
+      <title id="figtitle">Schematic map of Puerto Rico showing the Aguirre and Ceiba sites, cross-island transmission, and screened-out sites</title>
+      <rect x="0" y="0" width="820" height="345" fill="#f5f7f9"/>
+      <polygon points="81.4,38.2 143.9,33.5 286.8,42.9 353.8,42.9 478.8,47.6 554.7,52.3 652.9,66.4 764.6,94.6 769.0,132.2 769.0,169.8 724.4,179.2 711.0,207.4 666.3,277.9 644.0,277.9 572.6,292.0 545.8,296.7 501.1,301.4 425.2,296.7 327.0,282.6 246.6,277.9 193.1,296.7 68.0,306.1 63.6,263.8 81.4,179.2 32.3,113.4 81.4,66.4" fill="#ffffff" stroke="#8b939e" stroke-width="1.2"/>
+      <path d="M150,190 C260,170 380,165 520,175 C580,180 620,190 650,200" fill="none" stroke="#d6d9de" stroke-width="10" stroke-linecap="round"/>
+      <g font-family="Helvetica Neue, Arial, sans-serif">
+        <text x="330" y="200" font-size="11" fill="#6b7280" text-anchor="middle" font-style="italic">Cordillera Central</text>
+        <path d="M495,262 L568,72" fill="none" stroke="#7a1f1f" stroke-width="1.6" stroke-dasharray="6 4"/>
+        <text x="532" y="150" font-size="11" fill="#7a1f1f" text-anchor="end">Cross-island transmission</text>
+        <text x="532" y="164" font-size="11" fill="#7a1f1f" text-anchor="end">(extended outages after Maria)</text>
+        <path d="M726,152 C700,110 660,80 580,64" fill="none" stroke="#1f3a5f" stroke-width="1.6" stroke-dasharray="2 3"/>
+        <text x="700" y="48" font-size="11" fill="#1f3a5f">Load-side route;</text>
+        <text x="700" y="61" font-size="11" fill="#1f3a5f">no Cordillera crossing</text>
+        <ellipse cx="693" cy="132" rx="24" ry="13" fill="#e7f0ea" stroke="#1e5b37" stroke-width="0.8" stroke-dasharray="3 2"/>
+        <text x="693" y="136" font-size="10" fill="#1e5b37" text-anchor="middle">El Yunque NF</text>
+        <ellipse cx="528" cy="301" rx="20" ry="7" fill="#e7f0ea" stroke="#1e5b37" stroke-width="0.8" stroke-dasharray="3 2"/>
+        <text x="552" y="322" font-size="11" fill="#1e5b37">Jobos Bay NERR</text>
+        <ellipse cx="236" cy="318" rx="40" ry="14" fill="none" stroke="#8b939e" stroke-dasharray="3 2"/>
+        <text x="284" y="325" font-size="11" fill="#5a6270">2019–20 earthquake sequence (offshore)</text>
+        <rect x="566" y="55" width="12" height="12" fill="#1b1f24"/>
+        <text x="572" y="30" font-size="12" fill="#1b1f24" text-anchor="middle" font-weight="700">San Juan metropolitan area</text>
+        <circle cx="495" cy="272" r="9" fill="#1f3a5f"/>
+        <text x="495" y="276" font-size="10" font-weight="700" fill="#fff" text-anchor="middle">A</text>
+        <text x="512" y="254" font-size="12" font-weight="700" fill="#1f3a5f">A · Aguirre, Salinas</text>
+        <text x="512" y="269" font-size="11" fill="#1f3a5f">BWRX-300 · 600–900 MWe</text>
+        <circle cx="733" cy="160" r="9" fill="#1f3a5f"/>
+        <text x="733" y="164" font-size="10" font-weight="700" fill="#fff" text-anchor="middle">B</text>
+        <text x="716" y="210" font-size="12" font-weight="700" fill="#1f3a5f" text-anchor="end">B · Ceiba</text>
+        <text x="716" y="225" font-size="11" fill="#1f3a5f" text-anchor="end">NuScale US460 · 462 MWe</text>
+        <line x1="728" y1="169" x2="716" y2="196" stroke="#1f3a5f" stroke-width="0.8"/>
+        <g font-size="11" fill="#6b7280">
+          <circle cx="305" cy="118" r="5" fill="#fff" stroke="#6b7280" stroke-width="1.5"/>
+          <text x="316" y="122">Utuado</text>
+          <circle cx="278" cy="57" r="5" fill="#fff" stroke="#6b7280" stroke-width="1.5"/>
+          <text x="278" y="26" text-anchor="middle">Arecibo coastal plain</text>
+          <circle cx="532" cy="59" r="5" fill="#fff" stroke="#6b7280" stroke-width="1.5"/>
+          <text x="522" y="80" text-anchor="end">Palo Seco</text>
+          <circle cx="260" cy="273" r="5" fill="#fff" stroke="#6b7280" stroke-width="1.5"/>
+          <text x="252" y="258" text-anchor="middle">Costa Sur</text>
+          <circle cx="41" cy="113" r="5" fill="#fff" stroke="#6b7280" stroke-width="1.5"/>
+          <text x="48" y="100">Rincón (BONUS, 1964–68)</text>
+        </g>
+      </g>
+    </svg>
+    <figcaption><b>Figure 1.</b> Recommended sites (filled) and screened-out sites (open). Schematic only. The coastline is approximate and positions are indicative. Author's illustration.</figcaption>
+  </figure>
+
+  <h2 id="s5">5. Site Assessments</h2>
+
+  <h3>5.1 Site A: Aguirre, Salinas</h3>
+  <div class="profile">
+    <div><b>600–900 MWe</b><span>2–3 × BWRX-300</span></div>
+    <div><b>1,492 MW</b><span>Retiring fossil at site</span></div>
+    <div><b>25,789</b><span>Salinas pop. (2020)<span class="ref"><a href="#r8">[8]</a></span></span></div>
+    <div><b>~370 / mi²</b><span>Salinas density</span></div>
+  </div>
+  <p><strong>Description.</strong> The nuclear island would sit on elevated ground inland of the existing Aguirre complex, set back from the shoreline and the Jobos Bay mangroves. It would connect to the existing switchyard and transmission corridors, with seawater supplied by a protected intake and a buried pipeline.</p>
+  <h4>Advantages</h4>
+  <ul>
+    <li><strong>Existing transmission node.</strong> The complex comprises two 450 MW steam units (1975) and two 296 MW combined-cycle units (1977).<span class="ref"><a href="#r16">[16]</a></span> Reactor output would fall within the capacity of the existing interconnection.</li>
+    <li><strong>Compatible unit size.</strong> A 300 MWe unit is a smaller single contingency than the 450 MW units the system already plans around at this node.</li>
+    <li><strong>A better north–south balance.</strong> About 2 GW of fossil capacity is scheduled to retire along this stretch of coast (Aguirre and AES). Replacing part of it with 600 to 900 MWe of nuclear reduces the south's share of island generation.</li>
+    <li><strong>Less pressure on the bay.</strong> The existing plant withdraws approximately 654 million gallons per day from Jobos Bay, mostly for once-through cooling.<span class="ref"><a href="#r19">[19]</a></span> Closed-cycle seawater towers would require roughly 17 to 26 million gallons per day (Appendix A).</li>
+    <li><strong>Marine access.</strong> Las Mareas harbor in neighboring Guayama receives bulk vessels for the AES plant and underwent maintenance dredging in July 2026.<span class="ref"><a href="#r24">[24]</a></span> Overland transport to the site is short and over flat terrain.</li>
+  </ul>
+  <h4>Constraints</h4>
+  <ul>
+    <li><strong>Community and environmental justice.</strong> Salinas and Guayama have hosted the island's coal-fired generation for more than two decades. EPA has taken enforcement action related to coal-ash management.<span class="ref"><a href="#r25">[25]</a></span> In 2022, nearly half of Guayama residents lived below the poverty line.<span class="ref"><a href="#r17">[17]</a></span> A proposal would need enforceable community-benefit commitments from the outset, such as local hiring, rate relief, and independent environmental monitoring. The Central Aguirre Historic District is also nearby.</li>
+    <li><strong>Jobos Bay National Estuarine Research Reserve.</strong> The reserve covers 2,883 acres, was designated in 1981, and supports endangered species including the West Indian manatee and hawksbill turtle.<span class="ref"><a href="#r20">[20]</a></span> The design should exclude once-through cooling, use screened low-velocity intakes, and discharge tower blowdown outside the reserve.</li>
+    <li><strong>Coastal and seismic hazard.</strong> The south coast is exposed to offshore seismic and tsunami sources, including the Muertos Trough. The 2019–20 earthquake sequence west of Ponce damaged the Costa Sur plant. Pad elevation and setback distance must be derived from site-specific surge, wave run-up, and tsunami analysis, and coastal-plain soils require liquefaction assessment.</li>
+    <li><strong>Timing mismatch.</strong> Nuclear capacity cannot be available before the scheduled fossil retirements (about 2030 and 2032). Interim capacity is required, and the switchyard and transmission rights should be preserved for later reuse.</li>
+  </ul>
+
+  <h3>5.2 Site B: Ceiba (Roosevelt Roads)</h3>
+  <div class="profile">
+    <div><b>462 MWe</b><span>6 × NuScale US460</span></div>
+    <div><b>11,307</b><span>Ceiba pop. (2020)<span class="ref"><a href="#r8">[8]</a></span></span></div>
+    <div><b>93%</b><span>Navy land conveyed</span></div>
+    <div><b>Load side</b><span>Of Cordillera Central</span></div>
+  </div>
+  <p><strong>Description.</strong> The plant would sit on elevated land behind the former Naval Station Roosevelt Roads, away from the waterfront. Seawater would be supplied from Ensenada Honda, and modules would be delivered by sea to the former base's deep-water pier.</p>
+  <h4>Advantages</h4>
+  <ul>
+    <li><strong>Supply on the load side.</strong> Power can reach the San Juan metropolitan area without crossing the Cordillera Central.<span class="ref"><a href="#r21">[21]</a></span></li>
+    <li><strong>Potential restoration role.</strong> NuScale states that a single module can operate independently of the grid and support black start.<span class="ref"><a href="#r22">[22]</a></span> If demonstrated, the plant could energize an eastern and metropolitan section of the grid while cross-island lines are repaired.</li>
+    <li><strong>No freshwater competition.</strong> Seawater cooling leaves the Río Blanco to the base's public-supply system, which is scheduled for rehabilitation that includes its Río Blanco intake.<span class="ref"><a href="#r11">[11]</a></span></li>
+    <li><strong>Land and logistics.</strong> The Navy has conveyed 93 percent of the land slated for transfer.<span class="ref"><a href="#r11">[11]</a></span> A deep-water pier and the former naval airfield are adjacent.</li>
+  </ul>
+  <h4>Constraints</h4>
+  <ul>
+    <li><strong>Competing land uses.</strong> The Local Redevelopment Authority is pursuing a spaceport, marina, and residential and hospitality projects. The airport and about 3,400 acres of ecologically sensitive land were transferred to the Ports Authority and DNER.<span class="ref"><a href="#r11">[11]</a></span> Redevelopment has been slowed partly by inadequate energy and water infrastructure, which a generating station could help address.</li>
+    <li><strong>El Yunque National Forest.</strong> The foothills adjoin the forest. Facilities must remain outside forest boundaries and protected habitat, and salt drift must be controlled with high-efficiency drift eliminators or hybrid towers. NEPA review and Endangered Species Act consultation should be expected.</li>
+    <li><strong>Transmission.</strong> The eastern network is comparatively weak. The site needs two new 230 kV circuits on separate corridors, toward San Juan and toward Caguas–Humacao.</li>
+    <li><strong>Technology maturity.</strong> No NuScale plant has been built. The Idaho reference project was cancelled in 2023 over cost.<span class="ref"><a href="#r3">[3]</a></span> The fallback is two BWRX-300 units, which would mean larger single contingencies on the eastern grid.</li>
+    <li><strong>Seismic.</strong> The eastern region is exposed to sources in the Anegada Passage, the source of the 1867 earthquake and tsunami.</li>
+  </ul>
+
+  <h2 id="s6">6. Sites Screened Out</h2>
+  <p class="caption">Table 3. <span>Site screening matrix</span></p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Criterion</th><th>Aguirre</th><th>Ceiba</th><th>Utuado</th><th>Palo Seco / San Juan</th><th>Arecibo plain</th></tr></thead>
+      <tbody>
+        <tr><td>Surge and tsunami</td><td><span class="mod">Moderate</span></td><td><span class="fav">Favorable</span></td><td><span class="fav">Favorable</span></td><td><span class="unf">Unfavorable</span></td><td><span class="unf">Unfavorable</span></td></tr>
+        <tr><td>Landslide and inland flood</td><td><span class="fav">Favorable</span></td><td><span class="mod">Moderate</span></td><td><span class="unf">Unfavorable</span></td><td><span class="mod">Moderate</span></td><td><span class="mod">Moderate</span></td></tr>
+        <tr><td>Seismic</td><td><span class="mod">Moderate</span></td><td><span class="mod">Moderate</span></td><td><span class="mod">Moderate</span></td><td><span class="mod">Moderate</span></td><td><span class="mod">Moderate</span></td></tr>
+        <tr><td>Cooling water</td><td><span class="fav">Favorable</span></td><td><span class="fav">Favorable</span></td><td><span class="unf">Unfavorable</span></td><td><span class="fav">Favorable</span></td><td><span class="fav">Favorable</span></td></tr>
+        <tr><td>Component delivery</td><td><span class="fav">Favorable</span></td><td><span class="fav">Favorable</span></td><td><span class="unf">Unfavorable</span></td><td><span class="fav">Favorable</span></td><td><span class="fav">Favorable</span></td></tr>
+        <tr><td>Grid position</td><td><span class="fav">Favorable</span></td><td><span class="fav">Favorable</span></td><td><span class="mod">Moderate</span></td><td><span class="fav">Favorable</span></td><td><span class="mod">Moderate</span></td></tr>
+        <tr><td>Population (NRC guidance)</td><td><span class="mod">Moderate</span></td><td><span class="mod">Moderate</span></td><td><span class="mod">Moderate</span></td><td><span class="unf">Unfavorable</span></td><td><span class="mod">Moderate</span></td></tr>
+        <tr><td>Land and competing use</td><td><span class="fav">Favorable</span></td><td><span class="mod">Moderate</span></td><td><span class="mod">Moderate</span></td><td><span class="mod">Moderate</span></td><td><span class="mod">Moderate</span></td></tr>
+        <tr><td>Community and environment</td><td><span class="mod">Moderate</span></td><td><span class="mod">Moderate</span></td><td><span class="mod">Moderate</span></td><td><span class="unf">Unfavorable</span></td><td><span class="mod">Moderate</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tnote">Ratings are qualitative screening judgments intended to scope site characterization. They are not study results.</p>
+  <ul>
+    <li><strong>Utuado (Dos Bocas–Caonillas reservoirs).</strong> This was the primary site in the prior revision. Hurricane Maria triggered more than 40,000 landslides island-wide, and about 38 percent of the municipality was mapped as high landslide density.<span class="ref"><a href="#r10">[10]</a></span> Heavy-haul access over mountain roads is unproven. Reservoir releases supply the North Coast Superaqueduct serving communities from Arecibo to San Juan, and Lago Dos Bocas had lost about 43 percent of its original storage to sedimentation by 1994.<span class="ref"><a href="#r9">[9]</a></span></li>
+    <li><strong>Palo Seco and the San Juan plants.</strong> These sites are adjacent to the load and on existing plant sites, but population density is well above NRC guidance and the coastline is low-lying.</li>
+    <li><strong>Costa Sur (Guayanilla).</strong> An existing plant site with attributes similar to Aguirre, but it lies next to the 2019–20 earthquake sequence, which damaged the plant.</li>
+    <li><strong>Arecibo coastal plain.</strong> Karst terrain and aquifer protection, storm surge, and the Río Grande de Arecibo dam-break path.</li>
+    <li><strong>Rincón and the offshore islands.</strong> Rincón is a small, historic site at the western end with weak transmission. Vieques and Culebra operate separate small grids.</li>
+  </ul>
+
+  <h2 id="s7">7. Technology Assessment</h2>
+  <p>Both selected designs are light-water reactors that use standard low-enriched uranium (&lt;5 percent U-235). Their vendor safety cases state that decay heat is removed after shutdown without pumps, AC power, or operator action. The designs were assigned to sites by grid position rather than by preference for one vendor.</p>
+  <p class="caption">Table 4. <span>Selected reactor technologies</span></p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Attribute</th><th>BWRX-300 (Aguirre)</th><th>NuScale US460 (Ceiba)</th></tr></thead>
+      <tbody>
+        <tr><td>Design</td><td>Natural-circulation boiling water reactor (GE Vernova Hitachi)</td><td>Integral pressurized water reactor; reactor, steam generators, and pressurizer in one vessel</td></tr>
+        <tr><td>Net output</td><td>~300 MWe per unit</td><td>77 MWe per module; 462 MWe for six</td></tr>
+        <tr><td>Passive decay-heat removal (vendor claim)</td><td>Isolation condensers; at least 7 days without power or operator action</td><td>Decay-heat removal system and shared reactor pool; no AC/DC power, added water, or operator action for an indefinite period</td></tr>
+        <tr><td>Regulatory status (Sept 2026)</td><td>Darlington Unit 1 under construction in Ontario.<span class="ref"><a href="#r5">[5]</a></span> NRC staff recommended issuance of the TVA Clinch River construction permit in June 2026.<span class="ref"><a href="#r6">[6]</a></span></td><td>NRC standard design approval issued May 29, 2025, for up to six modules.<span class="ref"><a href="#r2">[2]</a></span> No plant constructed.</td></tr>
+        <tr><td>Grid role</td><td>Replaces a larger existing contingency at an established node</td><td>Small contingency size; claimed island-mode and black-start capability<span class="ref"><a href="#r22">[22]</a></span></td></tr>
+        <tr><td>Alternates</td><td>Holtec SMR-300; Westinghouse AP300 (neither yet licensed in the U.S.)</td><td>2 × BWRX-300 if no NuScale plant is under construction by the procurement decision</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>7.1 Technologies not selected</h3>
+  <ul>
+    <li><strong>Large light-water reactors (e.g., AP1000).</strong> A single ~1,100 MWe unit would be roughly 40 percent of peak demand, a contingency the island grid could not withstand.</li>
+    <li><strong>Natrium.</strong> Its integrated thermal storage is attractive for balancing solar, but it requires high-assay low-enriched uranium (HALEU) and sodium coolant and has no operating plant. It is a candidate for later reassessment.</li>
+    <li><strong>Xe-100.</strong> It has strong inherent safety characteristics, but it also depends on HALEU supply and a later deployment timeline.</li>
+    <li><strong>Microreactors.</strong> They are too small for bulk supply. They may warrant later consideration for critical facilities (hospitals, water pumping, airports) once a commercial license is granted.</li>
+    <li><strong>Single-vendor fleet (NuScale at both sites, 924 MWe).</strong> This offers the smallest contingencies and a common supply chain. It carries higher reference cost per kilowatt and full exposure to an unbuilt design.</li>
+  </ul>
+
+  <h2 id="s8">8. Grid Integration</h2>
+  <ul>
+    <li><strong>Single contingencies.</strong> A BWRX-300 trip (300 MWe) is smaller than the existing 450 MW Aguirre units. A NuScale module trip (77 MWe) is minor.</li>
+    <li><strong>Loss of a whole site.</strong> The loss of all Aguirre units (600 to 900 MWe) would be smaller than the 1,492 MW now at that node, but it is still a severe event. Fast-acting reserves, principally battery storage, should be sized to this contingency, and under-frequency load-shedding schemes should be redesigned accordingly.</li>
+    <li><strong>Restoration sequence.</strong> If the vendor capability is confirmed, the grid operator's (LUMA's) restoration plan could have Ceiba energize an eastern and metropolitan section of the grid, with Aguirre resynchronizing as cross-island circuits return. This must be tested before it is relied on.</li>
+    <li><strong>Low-load operation.</strong> With substantial rooftop solar and nighttime demand well below peak, 1.1 to 1.4 GWe of nuclear capacity would supply a large share of load in some hours. Storage, the reactors' ability to follow load within limits, and retirement of inflexible fossil units must be planned together.</li>
+    <li><strong>Transmission.</strong> Aguirre reuses existing corridors. Hardening of the cross-island circuits remains necessary. Ceiba requires two new, separately routed 230 kV circuits.</li>
+  </ul>
+
+  <h2 id="s9">9. Extreme-Event Design Basis</h2>
+  <p>Category 5 (sustained winds of 157 mph or greater) is a lower bound, not a design value. For new reactors, the NRC expects extreme-wind and wind-borne missile loads at very low annual exceedance frequencies (on the order of 10<sup>−7</sup> per year). Puerto Rico is not covered by the mainland hazard maps in Regulatory Guide 1.221, so wind, missile, surge, tsunami, and flood parameters must be developed for each site and are expected to exceed nominal Category 5 values.</p>
+  <p>Experience suggests the governing hurricane risk is prolonged isolation rather than structural failure of containment. When Hurricane Andrew struck Turkey Point in 1992, safety-related structures performed as designed, although the site lost offsite power for several days and sustained significant non-nuclear damage. In Puerto Rico, the design must assume weeks without offsite power, road access, or resupply.</p>
+  <p class="caption">Table 5. <span>Performance objectives for a Category 5 hurricane with a 30-day loss of offsite power</span></p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Function</th><th>Performance objective</th></tr></thead>
+      <tbody>
+        <tr><td>Reactor core and spent fuel</td><td>Automatic shutdown and passive decay-heat removal. No fuel damage and no operator action required.</td></tr>
+        <tr><td>Safety-related structures</td><td>No loss of function. No penetration by design-basis missiles. Interiors remain dry above the combined flood and tsunami elevation.</td></tr>
+        <tr><td>Cooling towers and seawater intake</td><td>Loss of fans or intake pumps is acceptable. Both are non-safety systems whose loss affects output only.</td></tr>
+        <tr><td>Generation</td><td>Units trip on grid loss. Ceiba restarts in island mode if the capability is demonstrated; Aguirre resynchronizes as circuits return.</td></tr>
+        <tr><td>Public protection</td><td>Emergency planning zone sized under 10 CFR 50.160, potentially at the site boundary if supported by accident analysis.<span class="ref"><a href="#r7">[7]</a></span> Road access is not credited for cooling or protective actions.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>9.1 Design requirements</h3>
+  <ul>
+    <li><strong>Site grading.</strong> Safety structures above the combined surge, wave run-up, tsunami, and probable-maximum-precipitation flood elevation, with margin. At Aguirre this is the controlling site parameter.</li>
+    <li><strong>Structures.</strong> Seismic Category I reinforced concrete for the reactor, spent-fuel, control, and passive-cooling structures. Walls and roofs designed for the NRC wind-borne missile spectrum at site-specific gust speeds. Foundations designed to the current USGS Puerto Rico–U.S. Virgin Islands seismic hazard model, with liquefaction mitigation where required.</li>
+    <li><strong>Heat sink.</strong> Low-profile mechanical-draft seawater towers in reinforced basins. Protected intake structures and buried supply lines. High-efficiency drift eliminators.</li>
+    <li><strong>On-site self-sufficiency.</strong> Seven days of on-site fuel for backup generation and a 30-day resupply plan staged on the island. Beyond-design-basis (FLEX) equipment stored in a missile-protected structure. Accommodations and provisions for a sequestered operating crew.</li>
+    <li><strong>Switchyard and transmission.</strong> Hardened switchyard with bunkered spare transformers. The first mile of each circuit undergrounded or protected. At least two independent circuits per site.</li>
+    <li><strong>Spent fuel.</strong> In the absence of a federal repository, dry cask storage on site for the foreseeable future, designed to the same hazard basis as the safety island and supported by a storage agreement with DOE.</li>
+  </ul>
+
+  <h2 id="s10">10. Licensing Considerations</h2>
+  <ul>
+    <li><strong>Population density.</strong> NRC's longstanding siting guidance (Regulatory Guide 4.7) uses 500 persons per square mile within 20 miles. Puerto Rico's island-wide average exceeds that figure. In 2022, the Commission approved a dose-based approach that allows the assessment radius to scale with the design's safety characteristics.<span class="ref"><a href="#r23">[23]</a></span> An early population analysis under that approach is a threshold feasibility test for both sites.</li>
+    <li><strong>Emergency planning.</strong> Both designs are expected to seek a plume exposure pathway emergency planning zone at or near the site boundary under 10 CFR 50.160.<span class="ref"><a href="#r7">[7]</a></span></li>
+    <li><strong>Licensing pathway.</strong> An Early Site Permit for each site, followed by construction permit applications that reference the Clinch River (BWRX-300) and US460 (NuScale) precedents.</li>
+    <li><strong>Marine and coastal permits.</strong> The Aguirre intake and discharge adjoin a NOAA-designated reserve and require coordination with NOAA, EPA, and DNER. Replacing once-through cooling with closed-cycle towers is an environmental improvement that should be documented as such.</li>
+  </ul>
+
+  <h2 id="s11">11. Cost, Financing, and Schedule</h2>
+  <p class="caption">Table 6. <span>Reference projects</span></p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Project</th><th class="num">Capacity</th><th>Estimated cost</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Carbon Free Power Project, Idaho (NuScale, 6 modules)</td><td class="num">462 MWe</td><td>$9.3B including financing (2023); ~$20,100/kW<span class="ref"><a href="#r4">[4]</a></span></td><td>Cancelled November 2023</td></tr>
+        <tr><td>Darlington New Nuclear, Ontario (4 × BWRX-300)</td><td class="num">~1,200 MWe</td><td>C$20.9B (~US$15.1B), 2024 dollars including interest; ~$12,600/kW<span class="ref"><a href="#r5">[5]</a></span></td><td>Unit 1 under construction</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul>
+    <li><strong>Indicative cost.</strong> At reference rates: Aguirre about $7.6 billion (two units) or $11.3 billion (three units), and Ceiba about $9.3 billion, for a total of <strong>$17 billion (base) to $21 billion (with the third Aguirre unit)</strong>. Reuse of the Aguirre switchyard, corridors, and industrial land offsets some cost. Marine logistics, site-specific hurricane hardening, and first-of-a-kind execution in Puerto Rico add cost. These figures should be treated as a lower bound for planning.</li>
+    <li><strong>Financing.</strong> PREPA remains in debt restructuring and cannot carry the investment. Plausible structures combine DOE Loan Programs Office financing, federal appropriations, and private development under long-term power purchase agreements, subject to review by the Puerto Rico Energy Bureau.</li>
+    <li><strong>Schedule.</strong> Site characterization and permit preparation take two to three years. The Clinch River construction permit review took approximately one year from docketing to the staff recommendation.<span class="ref"><a href="#r6">[6]</a></span> Ontario plans roughly three and a half years to build its first unit. First power in Puerto Rico is unlikely before the mid-2030s, after the scheduled fossil retirements.</li>
+  </ul>
+
+  <h2 id="s12">12. Implementation Pathway and Decision Gates</h2>
+  <p class="caption">Table 7. <span>Phased pathway</span></p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Gate</th><th>Activity</th><th>Decision criterion to proceed</th></tr></thead>
+      <tbody>
+        <tr><td>0</td><td>Identify sponsor; fund site characterization at Aguirre and Ceiba; open consultation with host municipalities and agencies</td><td>Sponsor and funding committed; Commonwealth agencies willing to participate</td></tr>
+        <tr><td>1</td><td>Coastal hazard, seismic, liquefaction, marine intake, population, and interconnection studies; community-benefit framework</td><td>Both sites meet NRC population guidance; the Aguirre pad can clear the combined flood level; grid studies identify workable reserves</td></tr>
+        <tr><td>2</td><td>Early Site Permit applications; preserve Aguirre switchyard and transmission rights through the fossil retirements</td><td>Early Site Permits issued</td></tr>
+        <tr><td>3</td><td>Aguirre Unit 1 construction permit application (Clinch River precedent)</td><td>Financing closed; construction permit issued</td></tr>
+        <tr><td>4</td><td>Ceiba technology confirmation</td><td>A NuScale plant is under construction elsewhere; otherwise select the BWRX-300 alternate</td></tr>
+        <tr><td>5</td><td>Aguirre Unit 2; optional Unit 3</td><td>Operating experience from Unit 1; grid studies confirm reserves and low-load operation</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="s13">13. Stakeholders and Governance</h2>
+  <ul>
+    <li><strong>Federal:</strong> NRC (licensing); DOE (Office of Nuclear Energy, Loan Programs Office, spent-fuel storage); NOAA (Jobos Bay reserve); EPA; U.S. Forest Service (El Yunque); U.S. Fish and Wildlife Service (ESA consultation); FEMA (emergency preparedness).</li>
+    <li><strong>Commonwealth:</strong> Office of the Governor; Puerto Rico Energy Bureau (resource planning); PREPA; DNER (water, coastal, and land permits); Roosevelt Roads Local Redevelopment Authority; Ports Authority.</li>
+    <li><strong>System operators:</strong> LUMA Energy (transmission, interconnection, and restoration planning) and Genera PR (legacy generation).</li>
+    <li><strong>Local:</strong> the municipalities of Salinas, Guayama, Ceiba, and Naguabo; community organizations; the Nuclear Alternative Project.</li>
+  </ul>
+
+  <h2 id="s14">14. Key Uncertainties for Policymakers</h2>
+  <ol>
+    <li>Which entity would sponsor and own the plants, and under what financing structure independent of PREPA's balance sheet?</li>
+    <li>What conditions would secure Commonwealth consent, given the Governor's stated position?</li>
+    <li>Do both sites satisfy NRC population guidance under the dose-based approach?</li>
+    <li>What pad elevation and setback at Aguirre are required to clear the combined surge and tsunami hazard, and at what cost?</li>
+    <li>On what terms, if any, would the Salinas and Guayama communities support nuclear replacement of coal and oil generation?</li>
+    <li>Will NuScale's island-mode and black-start capability be demonstrated to a standard sufficient for inclusion in the island's restoration plan?</li>
+    <li>What interim capacity bridges the 2030–2032 fossil retirements to nuclear operation?</li>
+  </ol>
+
+  <h2 id="s15">15. Limitations</h2>
+  <p>This analysis relies on public sources and planning-level approximations. It does not constitute an engineering design, cost estimate, site characterization, or licensing submission. Cost figures are scaled from reference projects. Water figures are thermodynamic approximations. Vendor performance claims, including passive-cooling duration and black-start capability, are unverified until confirmed through NRC review and testing. Nothing in this paper authorizes land acquisition, alters Act 17-2019 energy policy, or represents the position of any government entity.</p>
+
+  <h2 id="appA">Appendix A. Assumptions and Calculations</h2>
+  <p class="caption">Table A-1. <span>Estimated cooling-water requirements (closed-cycle seawater towers)</span></p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Plant</th><th class="num">Heat rejected</th><th class="num">Evaporation</th><th class="num">Seawater withdrawal</th><th>Comparison</th></tr></thead>
+      <tbody>
+        <tr><td>Aguirre, 2 × BWRX-300</td><td class="num">~1,140 MWt</td><td class="num">0.38 m³/s (~9 MGD)</td><td class="num">0.75 m³/s (~17 MGD)</td><td>~3% of current Aguirre withdrawal (~654 MGD)</td></tr>
+        <tr><td>Aguirre, 3 × BWRX-300</td><td class="num">~1,710 MWt</td><td class="num">0.56 m³/s (~13 MGD)</td><td class="num">1.1 m³/s (~26 MGD)</td><td>~4% of current withdrawal</td></tr>
+        <tr><td>Ceiba, 6 × NuScale</td><td class="num">~1,040 MWt</td><td class="num">0.34 m³/s (~8 MGD)</td><td class="num">0.68 m³/s (~16 MGD)</td><td>No freshwater used for cooling</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul>
+    <li><strong>Thermal ratings:</strong> 870 MWt per BWRX-300 and 250 MWt per NuScale US460 module. Heat rejected equals thermal rating minus net electrical output.</li>
+    <li><strong>Evaporation:</strong> about 80 percent of rejected heat is removed by evaporation (latent heat 2.43 MJ/kg). Seawater towers are assumed to operate at about two cycles of concentration.</li>
+    <li><strong>Cost scaling:</strong> CFPP $9.3B for 462 MWe. Darlington US$15.1B for 1,200 MWe gives about $12,600/kW, applied to 600 and 900 MWe. No island, hardening, or learning adjustments are applied.</li>
+    <li><strong>Share of peak:</strong> 1,062 and 1,362 MWe against a 2,866 MW peak.<span class="ref"><a href="#r1">[1]</a></span></li>
+  </ul>
+
+  <h2 id="appB">Appendix B. Acronyms</h2>
+  <dl class="acr">
+    <dt>BWR</dt><dd>Boiling water reactor</dd>
+    <dt>CFPP</dt><dd>Carbon Free Power Project</dd>
+    <dt>DNER</dt><dd>Puerto Rico Department of Natural and Environmental Resources</dd>
+    <dt>DOE</dt><dd>U.S. Department of Energy</dd>
+    <dt>EPZ</dt><dd>Emergency planning zone</dd>
+    <dt>ESA</dt><dd>Endangered Species Act</dd>
+    <dt>FLEX</dt><dd>Diverse and flexible coping strategies (beyond-design-basis equipment)</dd>
+    <dt>HALEU</dt><dd>High-assay low-enriched uranium</dd>
+    <dt>MGD</dt><dd>Million gallons per day</dd>
+    <dt>MWe / MWt</dt><dd>Megawatts electric / thermal</dd>
+    <dt>NEPA</dt><dd>National Environmental Policy Act</dd>
+    <dt>NERR</dt><dd>National Estuarine Research Reserve</dd>
+    <dt>NRC</dt><dd>U.S. Nuclear Regulatory Commission</dd>
+    <dt>PREB</dt><dd>Puerto Rico Energy Bureau</dd>
+    <dt>PREPA</dt><dd>Puerto Rico Electric Power Authority</dd>
+    <dt>SMR</dt><dd>Small modular reactor</dd>
+  </dl>
+
+  <h2 id="refs">References</h2>
+  <ol class="refs">
+    <li id="r1">U.S. Department of Energy / National Renewable Energy Laboratory. "Puerto Rico Energy Snapshot." <a href="https://docs.nlr.gov/docs/fy20osti/76607.pdf">https://docs.nlr.gov/docs/fy20osti/76607.pdf</a></li>
+    <li id="r2">U.S. Nuclear Regulatory Commission. "NRC Approves Standard Design for NuScale US460 Small Modular Reactor." May 29, 2025. <a href="https://www.nrc.gov/about-nrc/news-releases/2025/nrc-approves-standard-design-nuscale-us460-small-modular-reactor">nrc.gov</a>; Federal Register notice, June 4, 2025. <a href="https://www.federalregister.gov/documents/2025/06/04/2025-10123/nuscale-power-llc-nuscale-us460-small-modular-reactor-standard-design-approval">federalregister.gov</a></li>
+    <li id="r3">Utility Dive. "NRC approves NuScale's small modular reactor plant design." June 2, 2025. <a href="https://www.utilitydive.com/news/nrc-approves-nuscale-small-modular-reactor-smr/749538/">utilitydive.com</a></li>
+    <li id="r4">National Rural Electric Cooperative Association. "NuScale and UAMPS End SMR Project (CFPP)." Business &amp; Technology Advisory, December 2023. <a href="https://www.cooperative.com/programs-services/bts/documents/advisories/advisory-nuscale-and-uamps-end-smr-project-cfpp-dec-2023.pdf">cooperative.com</a></li>
+    <li id="r5">Nuclear Engineering International. "Ontario approves Darlington BWRX-300 SMR." May 2025. <a href="https://www.neimagazine.com/news/ontario-approves-darlington-bwrx-300-smr/">neimagazine.com</a>; World Nuclear News. "Canada's first SMR project: How is CAD20.9 billion cost calculated?" June 2025. <a href="https://www.world-nuclear-news.org/articles/what-is-the-budget-for-canadas-first-smr-project">world-nuclear-news.org</a></li>
+    <li id="r6">U.S. Nuclear Regulatory Commission. "Clinch River Nuclear Site Application." <a href="https://www.nrc.gov/reactors/new-reactors/advanced/who-were-working-with/applicant-projects/clinch-river">nrc.gov</a>; American Nuclear Society. "Clinch River construction permit recommendation follows safety evaluation." July 1, 2026. <a href="https://www.ans.org/news/2026-07-01/article-8174/clinch-river-construction-permit-recommendation-follows-safety-evaluation/">ans.org</a></li>
+    <li id="r7">10 CFR 50.160, "Emergency preparedness for small modular reactors, non-light-water reactors, and non-power production or utilization facilities." <a href="https://www.ecfr.gov/current/title-10/chapter-I/part-50/subject-group-ECFR89aa6ca4aada73c/section-50.160">ecfr.gov</a>; Final rule, 88 Fed. Reg., November 16, 2023. <a href="https://www.federalregister.gov/documents/2023/11/16/2023-25163/emergency-preparedness-for-small-modular-reactors-and-other-new-technologies">federalregister.gov</a></li>
+    <li id="r8">U.S. Census Bureau. QuickFacts: <a href="https://www.census.gov/quickfacts/fact/table/salinasmunicipiopuertorico/NES010222">Salinas Municipio</a>; <a href="https://www.census.gov/quickfacts/fact/table/ceibamunicipiopuertorico/PST045225">Ceiba Municipio</a>; <a href="https://www.census.gov/quickfacts/utuadomunicipiopuertorico">Utuado Municipio</a>. 2020 Census counts: Salinas 25,789; Ceiba 11,307; Utuado 28,287.</li>
+    <li id="r9">U.S. Geological Survey. "Sedimentation Survey of Lago Dos Bocas, Puerto Rico, August 1994." WRI 95-4214. <a href="https://pubs.usgs.gov/wri/1995/4214/report.pdf">pubs.usgs.gov</a>; Soler-López, L.R. "Sedimentation Survey of Lago Dos Bocas, Utuado, Puerto Rico, January 2010." SIM 3217. <a href="https://pubs.usgs.gov/sim/3217/">pubs.usgs.gov</a></li>
+    <li id="r10">Bessette-Kirton, E., et al. "Landslides Triggered by Hurricane Maria: Assessment of an Extreme Event in Puerto Rico." <i>GSA Today</i> 29, no. 6 (2019). <a href="https://www.geosociety.org/gsatoday/science/G383A/article.htm">geosociety.org</a></li>
+    <li id="r11">San Juan Daily Star. "US Navy transfers more land to Roosey Roads redevelopment authority." July 2026. <a href="https://www.sanjuandailystar.com/post/us-navy-transfers-more-land-to-roosey-roads-redevelopment-authority">sanjuandailystar.com</a>; "Redevelopment of Roosevelt Roads lags." March 2026. <a href="https://www.sanjuandailystar.com/post/redevelopment-of-roosevelt-roads-lags">sanjuandailystar.com</a>; Local Redevelopment Authority for Roosevelt Roads. <a href="https://www.rooseveltroads.pr.gov/">rooseveltroads.pr.gov</a>; News is My Business. "Roosevelt Roads plans include spaceport, marina, golf course." March 2026. <a href="https://newsismybusiness.com/aerospace-tourism-projects-envisioned-for-puerto-ricos-roosevelt-roads/">newsismybusiness.com</a></li>
+    <li id="r12">San Juan Daily Star. "Governor: Nuclear plants won't be part of island's energy portfolio." June 30, 2025. <a href="https://www.sanjuandailystar.com/post/governor-nuclear-plants-won-t-be-part-of-island-s-energy-portfolio">sanjuandailystar.com</a>; Centro de Periodismo Investigativo. "Puerto Rico Governor Bets on Trump's 'Energy Dominance' With Natural Gas." December 3, 2025. <a href="https://periodismoinvestigativo.com/2025/12/puerto-rico-energy-dominance-natural-gas-trump/">periodismoinvestigativo.com</a></li>
+    <li id="r13">World Nuclear News. "SMRs economically feasible in Puerto Rico, study finds." February 8, 2024. <a href="https://www.world-nuclear-news.org/Articles/SMRs-economically-feasible-in-Puerto-Rico,-study-f">world-nuclear-news.org</a></li>
+    <li id="r14">El Nuevo Día. "Power demand rises as questions persist over Puerto Rico grid ahead of peak summer season." May 11, 2026. <a href="https://www.elnuevodia.com/english/news/story/power-demand-rises-as-questions-persist-over-puerto-rico-grid-ahead-of-peak-summer-season/">elnuevodia.com</a></li>
+    <li id="r15">Institute for Energy Economics and Financial Analysis. "Rooftop solar in Puerto Rico reaches 10% as grid reliability continues to wane." <a href="https://ieefa.org/resources/rooftop-solar-puerto-rico-reaches-10-grid-reliability-continues-wane">ieefa.org</a></li>
+    <li id="r16">Global Energy Monitor. "Aguirre power station." <a href="https://www.gem.wiki/Aguirre_power_station">gem.wiki</a></li>
+    <li id="r17">Grist. "As fossil fuel plants face retirement, a Puerto Rico community pushes for rooftop solar." <a href="https://grist.org/energy/as-fossil-fuel-plants-face-retirement-a-puerto-rico-community-pushes-for-rooftop-solar/">grist.org</a></li>
+    <li id="r18">Bloomberg Law. "Puerto Rico AES Coal-Fired Power Plant Wins Shutdown Reprieve." March 2025. <a href="https://news.bloomberglaw.com/bankruptcy-law/puerto-rico-aes-coal-fired-power-plant-wins-shutdown-reprieve">news.bloomberglaw.com</a></li>
+    <li id="r19">U.S. Environmental Protection Agency, Region 2. "Puerto Rico Electric Power Authority, Aguirre Power Plant Complex: NPDES Permit Fact Sheet." 2018. <a href="https://www.epa.gov/sites/default/files/2018-06/documents/aguirrefactsheet2018.pdf">epa.gov</a></li>
+    <li id="r20">National Oceanic and Atmospheric Administration. "Jobos Bay National Estuarine Research Reserve." <a href="https://coast.noaa.gov/nerrs/reserves/jobos-bay.html">coast.noaa.gov</a></li>
+    <li id="r21">U.S. Energy Information Administration. "Puerto Rico's electricity service is slow to return after Hurricane Maria." <i>Today in Energy</i>. <a href="https://www.eia.gov/todayinEnergy/detail.php?id=33452">eia.gov</a></li>
+    <li id="r22">NuScale Power. "Powering the 21st Century: Why the Power Grid Needs a Resilience Revolution." Vendor publication. <a href="https://www.nuscalepower.com/smr-insights-blog/powering-the-21st-century-why-the-power-grid-needs-a-resilience-revolution">nuscalepower.com</a></li>
+    <li id="r23">Morgan Lewis. "NRC Altering Population Siting Guidance for Advanced Reactors." July 2022. <a href="https://www.morganlewis.com/blogs/upandatom/2022/07/nrc-altering-population-siting-guidance-for-advanced-reactors">morganlewis.com</a></li>
+    <li id="r24">San Juan Daily Star. "Dredging begins in Las Mareas Bay in Guayama." July 2, 2026. <a href="https://www.sanjuandailystar.com/post/dredging-begins-in-las-mareas-bay-in-guayama">sanjuandailystar.com</a></li>
+    <li id="r25">U.S. Environmental Protection Agency. "EPA Settlement with AES Puerto Rico, L.P. Requires Action to Comply with Coal Ash Regulations." <a href="https://www.epa.gov/newsreleases/epa-settlement-aes-puerto-rico-lp-requires-action-comply-coal-ash-regulations">epa.gov</a></li>
+  </ol>
+
+  <p class="endnote">Additional sources consulted: 10 CFR Part 100 (reactor site criteria); NRC Regulatory Guide 1.221; USGS Puerto Rico–U.S. Virgin Islands seismic hazard model. Figures are planning estimates from public sources and do not represent licensed ratings for any Puerto Rico site. Suggested citation: Schulz, Benjamin John. <i>Siting Small Modular Reactors in Puerto Rico: A Two-Site Option at Aguirre and Ceiba.</i> Policy analysis, Revision 3, September 24, 2026.</p>
+
+</article>
+</body>
+</html>
