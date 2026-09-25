@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you cite this analysis, please use the following metadata."
+title: "Siting Small Modular Reactors in Puerto Rico: A Two-Site Option at Aguirre and Ceiba"
+type: report
+authors:
+  - family-names: Schulz
+    given-names: Benjamin John
+version: "Revision 3"
+date-released: 2026-09-24
+keywords:
+  - small modular reactors
+  - Puerto Rico
+  - energy resilience
+  - nuclear siting
+  - grid resilience
